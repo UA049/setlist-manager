@@ -9,7 +9,6 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 0;
         }
         h1, h2 {
             color: #333;
@@ -21,6 +20,13 @@
         li {
             margin: 5px 0;
         }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -28,17 +34,14 @@
 
     <section>
         <h2>1. セットリスト（日付ごと）</h2>
-        <div id="sorted-setlists"></div>
+        <ul id="date-list"></ul>
     </section>
 
     <section>
-        <h2>2. 披露回数が多い曲</h2>
-        <div id="frequent-songs"></div>
-    </section>
-
-    <section>
-        <h2>3. これまでに披露した曲</h2>
-        <ul id="all-songs"></ul>
+        <h2>セットリスト詳細</h2>
+        <div id="setlist-details">
+            <p>表示するセットリストをクリックしてください。</p>
+        </div>
     </section>
 </body>
 </html>
