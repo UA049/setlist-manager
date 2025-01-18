@@ -1,8 +1,3 @@
-// セットリストファイルリストを格納するグローバル変数
-let setlistFiles = [];
-// セットリストデータをキャッシュするグローバル変数
-let setlistData = [];
-
 // 1. ファイルリストを取得して表示
 function fetchFileList() {
     const fileIndexUrl = "setlists/index.json"; // ファイルリストが格納されたJSON
@@ -10,7 +5,6 @@ function fetchFileList() {
     fetch(fileIndexUrl)
         .then(response => response.json())
         .then(files => {
-            setlistFiles = files; // グローバル変数に保存
             loadSetlistData(files); // セットリストのデータをロード
             displayDateList(files); // セットリスト一覧を表示
         })
@@ -20,6 +14,7 @@ function fetchFileList() {
 }
 
 // 2. セットリストデータをロード
+let setlistData = [];
 function loadSetlistData(files) {
     const promises = files.map(file =>
         fetch(`setlists/${file}`).then(response => response.json())
@@ -27,7 +22,7 @@ function loadSetlistData(files) {
 
     Promise.all(promises)
         .then(data => {
-            setlistData = data; // グローバル変数にキャッシュ
+            setlistData = data;
         })
         .catch(error => {
             console.error("Error loading setlist data:", error);
@@ -51,10 +46,7 @@ function displayDateList(files) {
             const link = document.createElement("a");
             link.textContent = `${eventName} (${fullDate})`;
             link.href = "#";
-            link.addEventListener("click", (e) => {
-                e.preventDefault(); // リンクのデフォルト動作を無効化
-                loadSetlistDetails(file);
-            });
+            link.addEventListener("click", () => loadSetlistDetails(file));
             item.appendChild(link);
             dateList.appendChild(item);
         }
@@ -83,5 +75,5 @@ function loadSetlistDetails(file) {
 
 // 初期化
 document.addEventListener("DOMContentLoaded", () => {
-    fetchFileList();
+    fetchFileList(); // 修正: 正しい関数名に変更
 });
