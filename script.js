@@ -73,64 +73,7 @@ function loadSetlistDetails(file) {
         });
 }
 
-// 5. 頻繁に披露される曲を表示
-function displayFrequentSongs() {
-    const container = document.getElementById("result");
-
-    if (setlistData.length === 0) {
-        container.innerHTML = "<p>データがまだ読み込まれていません。</p>";
-        return;
-    }
-
-    const songCount = {};
-    setlistData.forEach(setlist => {
-        setlist.songs.forEach(song => {
-            songCount[song] = (songCount[song] || 0) + 1;
-        });
-    });
-
-    const sortedSongs = Object.entries(songCount)
-        .sort((a, b) => b[1] - a[1])
-        .map(([song, count]) => `${song}: ${count}回`);
-
-    container.innerHTML = "<h3>頻繁に披露された曲</h3><ul>";
-    sortedSongs.forEach(song => {
-        container.innerHTML += `<li>${song}</li>`;
-    });
-    container.innerHTML += "</ul>";
-}
-
-// 6. これまでに披露された曲を表示
-function displayAllSongs() {
-    const container = document.getElementById("result");
-
-    if (setlistData.length === 0) {
-        container.innerHTML = "<p>データがまだ読み込まれていません。</p>";
-        return;
-    }
-
-    const allSongs = new Set();
-    setlistData.forEach(setlist => {
-        setlist.songs.forEach(song => allSongs.add(song));
-    });
-
-    const sortedSongs = Array.from(allSongs).sort();
-
-    container.innerHTML = "<h3>これまでに披露された曲</h3><ul>";
-    sortedSongs.forEach(song => {
-        container.innerHTML += `<li>${song}</li>`;
-    });
-    container.innerHTML += "</ul>";
-}
-
 // 初期化
 document.addEventListener("DOMContentLoaded", () => {
-    fetchFileList(); // ファイルリストを取得
-
-    // メニュークリックイベントの設定
-    document.getElementById("view-setlists").addEventListener("click", () => {
-        displayDateList(setlistFiles);
-    });
-    document.getElementById("view-frequent-songs").addEventListener("click", displayFrequentSongs);
-    document.getElementById("view-all-songs").addEventListener("click", displayAllSongs);
+    fetchFileList(); // 修正: 正しい関数名に変更
 });
