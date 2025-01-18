@@ -12,12 +12,11 @@ function fetchFileList() {
         });
 }
 
-// 2. ファイル名リストからリンクを生成して表示
-function displayDateList() {
+// 2. ファイル名リストからリンクを表示
+function displayDateList(files) {
     const container = document.getElementById("date-list");
 
-    setlistFiles.forEach(file => {
-        // ファイル名から日付とイベント名を抽出
+    files.forEach(file => {
         const match = file.match(/^(\d{2}-\d{2}-\d{2})\((.+)\)\.json$/);
         if (match) {
             const [_, shortDate, eventName] = match;
@@ -34,16 +33,17 @@ function displayDateList() {
     });
 }
 
-// 3. JSONファイルから曲リストを読み込んで表示
+// 3. セットリストの詳細を読み込む
 function loadSetlistDetails(file) {
     const container = document.getElementById("setlist-details");
 
     fetch(`setlists/${file}`)
         .then(response => response.json())
-        .then(data => {
+        .then(setlist => {
             container.innerHTML = `
+                <h3>${setlist.event} (${setlist.date})</h3>
                 <ul>
-                    ${data.songs.map(song => `<li>${song}</li>`).join('')}
+                    ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
                 </ul>
             `;
         })
@@ -54,4 +54,4 @@ function loadSetlistDetails(file) {
 }
 
 // 初期化
-document.addEventListener("DOMContentLoaded", displayDateList);
+document.addEventListener("DOMContentLoaded", fetchFileList);
