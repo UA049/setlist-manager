@@ -4,9 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setlist Manager</title>
+    <script defer src="script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Setlist Manager</h1>
-    <p>セットリスト管理アプリへようこそ！</p>
+
+    <section>
+        <h2>1. セットリスト（日付ごと）</h2>
+        <div id="sorted-setlists"></div>
+    </section>
+
+    <section>
+        <h2>2. 披露回数が多い曲</h2>
+        <div id="frequent-songs"></div>
+    </section>
+
+    <section>
+        <h2>3. これまでに披露した曲</h2>
+        <ul id="all-songs"></ul>
+    </section>
 </body>
 </html>
