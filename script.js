@@ -1,4 +1,4 @@
-// セットリストのファイル名リスト（初期化）
+// セットリストのファイル名リスト（`index.json` から読み込む）
 let setlistFiles = [];
 // セットリストデータのキャッシュ
 let setlistData = [];
@@ -32,19 +32,17 @@ function displayResult(type) {
 
     if (type === "setlists") {
         container.innerHTML = "<h3>セットリスト一覧</h3><ul>";
-        setlistFiles.forEach((file, index) => {
-            const match = file.match(/^(\d{2}-\d{2}-\d{2})\((.+)\)\.json$/);
-            if (match) {
-                const [_, shortDate, eventName] = match;
-                const fullDate = `20${shortDate.replace(/-/g, "-")}`;
-                const item = document.createElement("li");
-                const link = document.createElement("a");
-                link.textContent = `${eventName} (${fullDate})`;
-                link.href = "#";
-                link.addEventListener("click", () => displaySetlistDetails(index));
-                item.appendChild(link);
-                container.appendChild(item);
-            }
+        setlistData.forEach((setlist, index) => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.textContent = `${setlist.event} (${setlist.date})`;
+            link.href = "#";
+            link.addEventListener("click", (e) => {
+                e.preventDefault(); // デフォルトのリンク動作を無効化
+                displaySetlistDetails(index);
+            });
+            item.appendChild(link);
+            container.appendChild(item);
         });
         container.innerHTML += "</ul>";
     } else if (type === "frequent-songs") {
@@ -68,12 +66,16 @@ function displayResult(type) {
 function displaySetlistDetails(index) {
     const container = document.getElementById("result");
     const setlist = setlistData[index];
-    container.innerHTML = `
-        <h3>曲リスト</h3>
-        <ul>
-            ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
-        </ul>
-    `;
+    if (setlist) {
+        container.innerHTML = `
+            <h3>${setlist.event} (${setlist.date})</h3>
+            <ul>
+                ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
+            </ul>
+        `;
+    } else {
+        container.innerHTML = "<p>指定されたセットリストが見つかりません。</p>";
+    }
 }
 
 // `index.json` を読み込んでセットリストデータを取得
@@ -92,6 +94,7 @@ function loadSetlists() {
         })
         .then(data => {
             setlistData = data;
+            console.log("Setlist data loaded:", setlistData); // デバッグ用
         })
         .catch(error => {
             console.error("Error loading setlists:", error);
