@@ -62,44 +62,64 @@ function displayResult(type) {
     }
 }
 
-// 特定のセットリストの詳細を表示
-function displaySetlistDetails(index) {
-    const container = document.getElementById("result");
-    const setlist = setlistData[index];
-    if (setlist) {
-        container.innerHTML = `
-            <h3>${setlist.event} (${setlist.date})</h3>
-            <ul>
-                ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
-            </ul>
-        `;
-    } else {
-        container.innerHTML = "<p>指定されたセットリストが見つかりません。</p>";
-    }
-}
+// 1. ファイルリストを取得して表示
+function fetchFileList() {
+    const fileIndexUrl = "setlists/index.json"; // ファイルリストが格納されたJSON
 
-// `index.json` を読み込んでセットリストデータを取得
-function loadSetlists() {
-    fetch("setlists/index.json")
+    fetch(fileIndexUrl)
         .then(response => response.json())
         .then(files => {
-            setlistFiles = files;
-
-            // 各セットリストファイルを読み込む
-            const promises = setlistFiles.map(file =>
-                fetch(`setlists/${file}`).then(response => response.json())
-            );
-
-            return Promise.all(promises);
-        })
-        .then(data => {
-            setlistData = data;
-            console.log("Setlist data loaded:", setlistData); // デバッグ用
+            displayDateList(files);
         })
         .catch(error => {
-            console.error("Error loading setlists:", error);
+            console.error("Error fetching file list:", error);
         });
 }
+
+// 2. ファイル名リストからリンクを表示
+function displayDateList(files) {
+    const container = document.getElementById("date-list");
+
+    files.forEach(file => {
+        const match = file.match(/^(\d{2}-\d{2}-\d{2})\((.+)\)\.json$/);
+        if (match) {
+            const [_, shortDate, eventName] = match;
+            const fullDate = `20${shortDate.replace(/-/g, "-")}`;
+
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.textContent = `${eventName} (${fullDate})`;
+            link.href = "#";
+            link.addEventListener("click", () => loadSetlistDetails(file));
+            item.appendChild(link);
+            container.appendChild(item);
+        }
+    });
+}
+
+// 3. セットリストの詳細を読み込む
+function loadSetlistDetails(file) {
+    const container = document.getElementById("setlist-details");
+
+    fetch(`setlists/${file}`)
+        .then(response => response.json())
+        .then(setlist => {
+            container.innerHTML = `
+                <h3>${setlist.event} (${setlist.date})</h3>
+                <ul>
+                    ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
+                </ul>
+            `;
+        })
+        .catch(error => {
+            container.innerHTML = `<p>セットリストの読み込み中にエラーが発生しました。</p>`;
+            console.error("Error loading setlist:", error);
+        });
+}
+
+// 初期化
+document.addEventListener("DOMContentLoaded", fetchFileList);
+
 
 // 初期化
 document.addEventListener("DOMContentLoaded", () => {
