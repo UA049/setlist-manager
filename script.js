@@ -1,10 +1,5 @@
-// セットリストのファイル名リスト
-const setlistFiles = [
-    "25-01-18(WinterTour).json",
-    "25-01-17(NewYearLive).json",
-    "25-01-16(SpecialEvent).json"
-];
-
+// セットリストのファイル名リスト（初期化）
+let setlistFiles = [];
 // セットリストデータのキャッシュ
 let setlistData = [];
 
@@ -81,13 +76,20 @@ function displaySetlistDetails(index) {
     `;
 }
 
-// 全セットリストを読み込む
+// `index.json` を読み込んでセットリストデータを取得
 function loadSetlists() {
-    const promises = setlistFiles.map(file =>
-        fetch(`setlists/${file}`).then(response => response.json())
-    );
+    fetch("setlists/index.json")
+        .then(response => response.json())
+        .then(files => {
+            setlistFiles = files;
 
-    Promise.all(promises)
+            // 各セットリストファイルを読み込む
+            const promises = setlistFiles.map(file =>
+                fetch(`setlists/${file}`).then(response => response.json())
+            );
+
+            return Promise.all(promises);
+        })
         .then(data => {
             setlistData = data;
         })
