@@ -37,14 +37,14 @@ function displayDateList(files) {
     const dateList = document.getElementById("date-list");
 
     files.forEach(file => {
-        const match = file.match(/^(\d{2}-\d{2}-\d{2})\((.+)\)\.json$/);
+        // 新しい形式のファイル名 (例: ROOTS_KIRAKIRA_2024-11-28.json) から情報を抽出
+        const match = file.match(/^(.+)_([\d-]+)\.json$/);
         if (match) {
-            const [_, shortDate, eventName] = match;
-            const fullDate = `20${shortDate.replace(/-/g, "-")}`;
+            const [_, eventName, date] = match;
 
             const item = document.createElement("li");
             const link = document.createElement("a");
-            link.textContent = `${eventName} (${fullDate})`;
+            link.textContent = `${eventName.replace(/_/g, " ")} (${date})`; // "_" をスペースに置換
             link.href = "#";
             link.addEventListener("click", () => loadSetlistDetails(file));
             item.appendChild(link);
@@ -52,6 +52,7 @@ function displayDateList(files) {
         }
     });
 }
+
 
 // 4. セットリストの詳細を読み込む
 function loadSetlistDetails(file) {
