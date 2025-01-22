@@ -123,6 +123,74 @@ function displayAllSongs() {
     container.innerHTML += "</ul>";
 }
 
+// 曲ごとに公演情報を集計
+function getSongsWithEvents() {
+    const songMap = {};
+
+    setlistData.forEach(setlist => {
+        setlist.songs.forEach(song => {
+            if (!songMap[song]) {
+                songMap[song] = [];
+            }
+            songMap[song].push({
+                date: setlist.date,
+                event: setlist.event
+            });
+        });
+    });
+
+    return songMap;
+}
+
+// これまでに披露された曲を表示
+function displayAllSongs() {
+    const container = document.getElementById("result");
+
+    if (setlistData.length === 0) {
+        container.innerHTML = "<p>データがまだ読み込まれていません。</p>";
+        return;
+    }
+
+    const songMap = getSongsWithEvents(); // 曲と公演情報を取得
+    const allSongs = Object.keys(songMap).sort(); // 曲名をソート
+
+    container.innerHTML = "<h3>これまでに披露された曲</h3><ul id='song-list'></ul>";
+    const songList = document.getElementById("song-list");
+
+    allSongs.forEach(song => {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.textContent = song;
+        link.href = "#";
+        link.addEventListener("click", () => displayEventsForSong(songMap[song], song));
+        item.appendChild(link);
+        songList.appendChild(item);
+    });
+}
+
+// 特定の曲に対応する公演一覧を表示
+function displayEventsForSong(events, song) {
+    const container = document.getElementById("result");
+
+    container.innerHTML = `
+        <h3>${song} が披露された公演</h3>
+        <ul>
+            ${events
+                .map(event => `<li>${event.event} (${event.date})</li>`)
+                .join("")}
+        </ul>
+        <a href="#" id="back-to-all-songs">曲一覧に戻る</a>
+    `;
+
+    // 「曲一覧に戻る」リンクの動作を設定
+    document.getElementById("back-to-all-songs").addEventListener("click", (e) => {
+        e.preventDefault();
+        displayAllSongs();
+    });
+}
+
+document.getElementById("view-all-songs").addEventListener("click", displayAllSongs);
+
 // 初期化
 document.addEventListener("DOMContentLoaded", () => {
     fetchFileList(); // ファイルリストを取得
