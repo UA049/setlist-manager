@@ -1,3 +1,7 @@
+// グローバル変数
+let setlistFiles = [];
+let setlistData = []; // セットリストデータをキャッシュ
+
 // 1. ファイルリストを取得して表示
 function fetchFileList() {
     const fileIndexUrl = "setlists/index.json"; // ファイルリストが格納されたJSON
@@ -5,6 +9,7 @@ function fetchFileList() {
     fetch(fileIndexUrl)
         .then(response => response.json())
         .then(files => {
+            setlistFiles = files; // グローバル変数に保存
             loadSetlistData(files); // セットリストのデータをロード
             displayDateList(files); // セットリスト一覧を表示
         })
@@ -14,7 +19,6 @@ function fetchFileList() {
 }
 
 // 2. セットリストデータをロード
-let setlistData = [];
 function loadSetlistData(files) {
     const promises = files.map(file =>
         fetch(`setlists/${file}`).then(response => response.json())
@@ -22,7 +26,7 @@ function loadSetlistData(files) {
 
     Promise.all(promises)
         .then(data => {
-            setlistData = data;
+            setlistData = data; // グローバル変数にキャッシュ
         })
         .catch(error => {
             console.error("Error loading setlist data:", error);
@@ -37,7 +41,6 @@ function displayDateList(files) {
     const dateList = document.getElementById("date-list");
 
     files.forEach(file => {
-        // 新しい形式のファイル名 (例: 2024-11-28_ROOTS_KIRAKIRA.json) から情報を抽出
         const match = file.match(/^([\d-]+)_(.+)\.json$/);
         if (match) {
             const [_, date, eventName] = match;
@@ -159,7 +162,6 @@ function displayEventsForSong(events, song) {
         <a href="#" id="back-to-all-songs">曲一覧に戻る</a>
     `;
 
-    // 「曲一覧に戻る」リンクの動作を設定
     document.getElementById("back-to-all-songs").addEventListener("click", (e) => {
         e.preventDefault();
         displayAllSongs();
