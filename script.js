@@ -65,26 +65,30 @@ function displayDateList(files) {
     const monthGroups = {};
 
     files.forEach(file => {
-        const match = file.match(/^(\d{4}-\d{2})-\d{2}_(.+)\.json$/);
+        const match = file.match(/^(\d{4})-(\d{2})-\d{2}_(.+)\.json$/);
         if (match) {
-            const [_, month, eventName] = match;
+            const [_, year, month, eventName] = match;
+            const monthKey = `${year}-${month}`;
 
-            if (!monthGroups[month]) {
-                monthGroups[month] = [];
+            if (!monthGroups[monthKey]) {
+                monthGroups[monthKey] = [];
             }
-            monthGroups[month].push({ file, eventName });
+            monthGroups[monthKey].push({ file, eventName });
         }
     });
 
-    Object.keys(monthGroups).sort().reverse().forEach(month => {
-        const item = document.createElement("li");
-        const link = document.createElement("a");
-        link.textContent = month;
-        link.href = "#";
-        link.addEventListener("click", () => displaySetlistsForMonth(month, monthGroups[month]));
-        item.appendChild(link);
-        monthList.appendChild(item);
-    });
+    // 月の一覧を作成（降順にソート）
+    Object.keys(monthGroups)
+        .sort((a, b) => b.localeCompare(a)) // 新しい順に表示
+        .forEach(monthKey => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.textContent = monthKey;
+            link.href = "#";
+            link.addEventListener("click", () => displaySetlistsForMonth(monthKey, monthGroups[monthKey]));
+            item.appendChild(link);
+            monthList.appendChild(item);
+        });
 }
 
 // 4. 選択した月のセットリストを表示
@@ -113,6 +117,8 @@ function displaySetlistsForMonth(month, setlists) {
     const backButton = document.createElement("a");
     backButton.href = "#";
     backButton.textContent = "一覧に戻る";
+    backButton.style.display = "block";
+    backButton.style.marginTop = "10px";
     backButton.addEventListener("click", (e) => {
         e.preventDefault();
         displayDateList(setlistFiles);
@@ -120,7 +126,6 @@ function displaySetlistsForMonth(month, setlists) {
 
     container.appendChild(backButton);
 }
-
 
 // 4. セットリストの詳細を読み込む
 function loadSetlistDetails(file) {
