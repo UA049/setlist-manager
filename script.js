@@ -151,6 +151,32 @@ function displayFrequentSongs() {
     container.innerHTML += "</ul>";
 }
 
+// 6. セットリストの詳細を読み込む
+function loadSetlistDetails(file) {
+    const container = document.getElementById("result");
+
+    fetch(`setlists/${file}`)
+        .then(response => response.json())
+        .then(setlist => {
+            container.innerHTML = `
+                <h3>${setlist.event} (${setlist.date})</h3>
+                <ul>
+                    ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
+                </ul>
+                <a href="#" id="back-to-list">一覧に戻る</a>
+            `;
+
+            document.getElementById("back-to-list").addEventListener("click", (e) => {
+                e.preventDefault();
+                displayDateList(setlistFiles);
+            });
+        })
+        .catch(error => {
+            container.innerHTML = `<p>セットリストの読み込み中にエラーが発生しました。</p>`;
+            console.error("Error loading setlist:", error);
+        });
+}
+
 // 初期化
 document.addEventListener("DOMContentLoaded", () => {
     fetchFileList(); // ファイルリストを取得
