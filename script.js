@@ -19,7 +19,7 @@ function fetchFileList() {
 
 // 2. 月ごとに分類してファイル名リストを表示
 function displayDateList(files) {
-    console.log("ファイルリスト:", files); // デバッグ用
+    // console.log("ファイルリスト:", files); // デバッグ用
 
     const container = document.getElementById("result");
     container.innerHTML = "<h3>セットリスト一覧</h3><ul id='month-list'></ul>";
@@ -28,7 +28,7 @@ function displayDateList(files) {
     const monthGroups = {};
 
     files.forEach(file => {
-        console.log("処理中のファイル:", file); // デバッグ用
+        // console.log("処理中のファイル:", file); // デバッグ用
 
         // 「YY-MM-DD_イベント名.json」にマッチする正規表現
         const match = file.match(/^(\d{2}-\d{2})-\d{2}_(.+)\.json$/);
@@ -44,7 +44,7 @@ function displayDateList(files) {
         }
     });
 
-    console.log("分類されたデータ:", monthGroups); // デバッグ用
+    // console.log("分類されたデータ:", monthGroups); // デバッグ用
 
     // 月の一覧を作成（降順にソート）
     Object.keys(monthGroups)
@@ -65,7 +65,7 @@ function displayDateList(files) {
 
 // 3. 選択した月のセットリストを表示
 function displaySetlistsForMonth(month, setlists) {
-    console.log(`表示するセットリスト（月: ${month}）`, setlists); // デバッグ用
+    // console.log(`表示するセットリスト（月: ${month}）`, setlists); // デバッグ用
 
     const container = document.getElementById("result");
     container.innerHTML = `<h3>20${month} のセットリスト</h3><ul id='setlist-${month}'></ul>`;
@@ -82,7 +82,7 @@ function displaySetlistsForMonth(month, setlists) {
             link.textContent = `${eventName.replace(/_/g, " ")} (${date})`;
             link.href = "#";
             link.addEventListener("click", () => {
-                console.log(`クリックされたセットリスト: ${file}`); // デバッグ用
+                // console.log(`クリックされたセットリスト: ${file}`); // デバッグ用
                 loadSetlistDetails(file);
             });
             item.appendChild(link);
@@ -98,7 +98,7 @@ function displaySetlistsForMonth(month, setlists) {
     backButton.style.marginTop = "10px";
     backButton.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log("戻るボタンがクリックされました"); // デバッグ用
+        // console.log("戻るボタンがクリックされました"); // デバッグ用
         displayDateList(setlistFiles);
     });
 
@@ -107,7 +107,7 @@ function displaySetlistsForMonth(month, setlists) {
 
 // 4. セットリストの詳細を読み込む
 function loadSetlistDetails(file) {
-    console.log(`表示するセットリスト: ${file}`); // デバッグ用
+    // console.log(`表示するセットリスト: ${file}`); // デバッグ用
 
     const container = document.getElementById("result");
 
@@ -124,7 +124,7 @@ function loadSetlistDetails(file) {
 
             document.getElementById("back-to-list").addEventListener("click", (e) => {
                 e.preventDefault();
-                console.log("一覧に戻るボタンがクリックされました"); // デバッグ用
+                // console.log("一覧に戻るボタンがクリックされました"); // デバッグ用
                 displayDateList(setlistFiles);
             });
         })
