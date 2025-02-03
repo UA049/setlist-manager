@@ -33,47 +33,69 @@ function loadSetlistData(files) {
         });
 }
 
-// 3. ファイル名リストからリンクを表示
+// 3. 月ごとに分類してファイル名リストを表示
 function displayDateList(files) {
     const container = document.getElementById("result");
+    container.innerHTML = "<h3>セットリスト一覧</h3><ul id='month-list'></ul>";
 
-    container.innerHTML = "<h3>セットリスト一覧</h3><ul id='date-list'></ul>";
-    const dateList = document.getElementById("date-list");
+    const monthList = document.getElementById("month-list");
+    const monthGroups = {};
 
     files.forEach(file => {
-        const match = file.match(/^([\d-]+)_(.+)\.json$/);
+        const match = file.match(/^(\d{4}-\d{2})-\d{2}_(.+)\.json$/);
         if (match) {
-            const [_, date, eventName] = match;
+            const [_, month, eventName] = match;
 
-            const item = document.createElement("li");
-            const link = document.createElement("a");
-            link.textContent = `${eventName.replace(/_/g, " ")} (${date})`; // "_" をスペースに置換
-            link.href = "#";
-            link.addEventListener("click", () => loadSetlistDetails(file));
-            item.appendChild(link);
-            dateList.appendChild(item);
+            if (!monthGroups[month]) {
+                monthGroups[month] = [];
+            }
+            monthGroups[month].push({ file, eventName });
         }
+    });
+
+    Object.keys(monthGroups).sort().reverse().forEach(month => {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.textContent = month;
+        link.href = "#";
+        link.addEventListener("click", () => displaySetlistsForMonth(month, monthGroups[month]));
+        item.appendChild(link);
+        monthList.appendChild(item);
     });
 }
 
-// 4. セットリストの詳細を読み込む
-function loadSetlistDetails(file) {
+// 4. 選択した月のセットリストを表示
+function displaySetlistsForMonth(month, setlists) {
     const container = document.getElementById("result");
+    container.innerHTML = `<h3>${month} のセットリスト</h3><ul id='setlist-${month}'></ul>`;
 
-    fetch(`setlists/${file}`)
-        .then(response => response.json())
-        .then(setlist => {
-            container.innerHTML = `
-                <h3>${setlist.event} (${setlist.date})</h3>
-                <ul>
-                    ${setlist.songs.map(song => `<li>${song}</li>`).join('')}
-                </ul>
-            `;
-        })
-        .catch(error => {
-            container.innerHTML = `<p>セットリストの読み込み中にエラーが発生しました。</p>`;
-            console.error("Error loading setlist:", error);
-        });
+    const setlistContainer = document.getElementById(`setlist-${month}`);
+
+    setlists.forEach(({ file, eventName }) => {
+        const match = file.match(/^([\d-]+)_(.+)\.json$/);
+        if (match) {
+            const [_, date, eventName] = match;
+            
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.textContent = `${eventName.replace(/_/g, " ")} (${date})`;
+            link.href = "#";
+            link.addEventListener("click", () => loadSetlistDetails(file));
+            item.appendChild(link);
+            setlistContainer.appendChild(item);
+        }
+    });
+
+    // 戻るボタンを追加
+    const backButton = document.createElement("a");
+    backButton.href = "#";
+    backButton.textContent = "一覧に戻る";
+    backButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        displayDateList(setlistFiles);
+    });
+
+    container.appendChild(backButton);
 }
 
 // 5. 頻繁に披露される曲を表示
