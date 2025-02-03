@@ -34,6 +34,30 @@ function loadSetlistData(files) {
 }
 
 // 3. ファイル名リストからリンクを表示
+function displayDateList(files, selectedMonth = "all") {
+    const container = document.getElementById("result");
+    container.innerHTML = "<h3>セットリスト一覧</h3><ul id='date-list'></ul>";
+    const dateList = document.getElementById("date-list");
+
+    files.forEach(file => {
+        const match = file.match(/^([\d-]+)_(.+)\.json$/);
+        if (match) {
+            const [_, date, eventName] = match;
+            const yearMonth = date.slice(0, 7);
+
+            // 月が選択されている場合、フィルタリング
+            if (selectedMonth !== "all" && yearMonth !== selectedMonth) return;
+
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.textContent = `${eventName.replace(/_/g, " ")} (${date})`;
+            link.href = "#";
+            link.addEventListener("click", () => loadSetlistDetails(file));
+            item.appendChild(link);
+            dateList.appendChild(item);
+        }
+    });
+}
 function displayDateList(files) {
     const container = document.getElementById("result");
 
@@ -166,6 +190,26 @@ function displayEventsForSong(events, song) {
         e.preventDefault();
         displayAllSongs();
     });
+    
+}// 月一覧を取得し、ドロップダウンを作成
+function populateMonthDropdown(files) {
+    const monthSet = new Set();
+    files.forEach(file => {
+        const match = file.match(/^([\d-]+)_(.+)\.json$/);
+        if (match) {
+            const [date] = match;
+            const yearMonth = date.slice(0, 7); // YYYY-MM を取得
+            monthSet.add(yearMonth);
+        }
+    });
+
+    const monthSelect = document.getElementById("month-select");
+    monthSet.forEach(month => {
+        const option = document.createElement("option");
+        option.value = month;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
 }
 
 // 初期化
@@ -176,6 +220,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("view-setlists").addEventListener("click", () => {
         displayDateList(setlistFiles);
     });
+
     document.getElementById("view-frequent-songs").addEventListener("click", displayFrequentSongs);
     document.getElementById("view-all-songs").addEventListener("click", displayAllSongs);
+
+    // 月選択の変更イベント
+    document.getElementById("month-select").addEventListener("change", (event) => {
+        const selectedMonth = event.target.value;
+        displayDateList(setlistFiles, selectedMonth);
+    });
 });
