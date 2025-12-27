@@ -36,23 +36,58 @@ function loadSetlistData(files) {
 // 3. ファイル名リストからリンクを表示
 function displayDateList(files) {
     const container = document.getElementById("result");
+    container.innerHTML = "<h3>セットリスト一覧</h3>";
 
-    container.innerHTML = "<h3>セットリスト一覧</h3><ul id='date-list'></ul>";
-    const dateList = document.getElementById("date-list");
+    // 年ごとのリストを作成
+    const yearMap = {};
 
     files.forEach(file => {
         const match = file.match(/^([\d-]+)_(.+)\.json$/);
         if (match) {
             const [_, date, eventName] = match;
+            const year = "20" + date.slice(0, 2); // 例: "25" → "2025"
 
+            if (!yearMap[year]) {
+                yearMap[year] = [];
+            }
+
+            yearMap[year].push({
+                file,
+                date,
+                eventName: eventName.replace(/_/g, " ")
+            });
+        }
+    });
+
+    // 年ごとにセクションを作成
+    Object.keys(yearMap).sort().forEach(year => {
+        const section = document.createElement("div");
+        section.className = "year-section";
+
+        const toggle = document.createElement("div");
+        toggle.className = "toggle-button";
+        toggle.textContent = `${year} ▼`;
+        toggle.addEventListener("click", () => {
+            const list = section.querySelector("ul");
+            list.style.display = (list.style.display === "none") ? "block" : "none";
+        });
+
+        const list = document.createElement("ul");
+        list.style.display = "none"; // 初期状態は非表示
+
+        yearMap[year].forEach(entry => {
             const item = document.createElement("li");
             const link = document.createElement("a");
-            link.textContent = `${eventName.replace(/_/g, " ")} (${date})`; // "_" をスペースに置換
+            link.textContent = `${entry.eventName} (${entry.date})`;
             link.href = "#";
-            link.addEventListener("click", () => loadSetlistDetails(file));
+            link.addEventListener("click", () => loadSetlistDetails(entry.file));
             item.appendChild(link);
-            dateList.appendChild(item);
-        }
+            list.appendChild(item);
+        });
+
+        section.appendChild(toggle);
+        section.appendChild(list);
+        container.appendChild(section);
     });
 }
 
